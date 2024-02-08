@@ -1,0 +1,37 @@
+uptime: Show how long the system has been running.
+whoami: Print the current user's name.
+hostname: Print or set system name.
+ifconfig/ip: Display or configure network interfaces.
+ping: Test a network connection.
+traceroute/tracepath: Print the route packets take to network host.
+netstat: Print network connections, routing tables, interface statistics, masquerade connections, and multicast memberships.
+route: View and manipulate the IP routing table.
+iptables/firewalld: Configure firewall rules.
+journalctl: Query the systemd journal.
+systemctl: Control the systemd system and service manager.
+crontab: Schedule tasks to run periodically.
+at: Schedule a command to be executed at a later time.
+watch: Execute a program periodically, displaying output fullscreen.
+nc (netcat): Utility for reading from and writing to network connections using TCP or UDP.
+chmod: Change file permissions.
+chown: Change file owner and group.
+tar: Tape archiver for manipulating archives.
+scp: Securely copy files between hosts on a network.
+chroot: Run a command or interactive shell with a different root directory.
+locate/updatedb: Find files by name.
+ldd: Print shared object dependencies.
+file: Determine file type.
+basename: Strip directory and suffix from filenames.
+dirname: Strip last component from file name.
+bc: Arbitrary precision calculator language.
+lsof: List open files.
+htop: Interactive process viewer.
+ssh-keygen: Generate SSH keys.
+openssl: OpenSSL command-line toolkit.
+ncdu: NCurses Disk Usage - a disk usage analyzer.
+tac: Concatenate and print files in reverse.
+fmt: Reformat paragraph text.
+tr: Translate or delete characters.
+paste: Merge lines of files.
+cut: Remove sections from each line of files.
+rev: Reverse lines character-wise.
