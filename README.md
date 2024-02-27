@@ -1,1 +1,1 @@
-# linx#-cmd
+# linux#-cmd
