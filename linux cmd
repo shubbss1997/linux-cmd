@@ -35,3 +35,4 @@ tr: Translate or delete characters.
 paste: Merge lines of files.
 cut: Remove sections from each line of files.
 rev: Reverse lines character-wise.
+sudo cp /dev/null mongod.log : for perticuler txt file data remove cmd
