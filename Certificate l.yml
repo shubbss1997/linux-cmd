@@ -1,0 +1,34 @@
+{{- $swci := .Values.issuer.swci -}}
+
+{{- if .Values.certificates }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  annotations:
+    blueprint: CERT_STANDARDSERVER_SWCI_PEM_GEN
+  name: certificate-by-ubsissuer-for-ingress-inkaless
+  namespace: aks-istio-ingress
+spec:
+  commonName: {{ $swci }}
+  dnsNames:
+  {{- range .Values.certificates.dnsNames }}
+  - {{ . }}
+  {{- end }}
+  duration: 721h
+  isCA: false
+  secretName: charles-tls-cert
+  renewBefore: 360h
+  revisionHistoryLimit: 1
+  subject:
+    countries:
+    - "CH"
+    organizationalUnits:
+    - "CA"
+    - "Server"
+    organizations:
+    - "UBS"
+  issuerRef:
+    group: ubs-issuer.ubs.com
+    kind: ClusterIssuer
+    name: creds-cluster-issuer-azure-uami
+{{- end }}
