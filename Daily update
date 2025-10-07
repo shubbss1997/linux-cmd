@@ -11,7 +11,7 @@ terraform {
 locals {
   tags = merge(
     {
-      Module = "aws_guardduty"
+      Module = "aws_guardduty_s3"
     },
     var.tags
   )
@@ -21,29 +21,10 @@ locals {
 resource "aws_guardduty_detector" "this" {
   enable                       = true
   finding_publishing_frequency  = var.finding_publishing_frequency
-
-  datasources {
-    s3_logs {
-      enable = var.enable_s3_logs
-    }
-
-    kubernetes {
-      audit_logs {
-        enable = var.enable_eks_audit_logs
-      }
-    }
-
-    malware_protection {
-      scan_ec2_instance_with_findings {
-        ebs_volumes = var.enable_ebs_malware_protection
-      }
-    }
-  }
-
-  tags = local.tags
+  tags                         = local.tags
 }
 
-# Optional: Organization-level setup (run in delegated admin account)
+# Optional: Organization-wide setup (only if needed)
 resource "aws_guardduty_organization_admin_account" "this" {
   count            = var.org_enable ? 1 : 0
   admin_account_id = var.org_admin_account_id
@@ -54,33 +35,11 @@ resource "aws_guardduty_organization_configuration" "this" {
   detector_id = aws_guardduty_detector.this.id
   auto_enable = var.org_auto_enable_members
 
-  datasources {
-    s3_logs {
-      auto_enable = var.enable_s3_logs
-    }
-    kubernetes {
-      audit_logs {
-        auto_enable = var.enable_eks_audit_logs
-      }
-    }
-    malware_protection {
-      scan_ec2_instance_with_findings {
-        ebs_volumes = var.enable_ebs_malware_protection
-      }
-    }
-  }
-
   depends_on = [aws_guardduty_organization_admin_account.this]
 }
 
-# Optional: Invite specific member accounts
-resource "aws_guardduty_member" "members" {
-  for_each    = var.members
-  account_id  = each.value.account_id
-  detector_id = aws_guardduty_detector.this.id
-  email       = each.value.email
-  invite      = var.members_invite
-
-  disable_email_notification = var.members_disable_email
-  message                    = var.members_invite_message
+# Include S3 configuration (defined separately in s3.tf)
+module "s3_protection" {
+  source      = "./"
+  depends_on  = [aws_guardduty_detector.this]
 }
