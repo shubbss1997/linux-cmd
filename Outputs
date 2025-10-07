@@ -1,31 +1,11 @@
-output "detector_id" {
-  description = "ID of the GuardDuty detector."
-  value       = aws_guardduty_detector.this.id
+output "guardduty_detector_id" {
+  value = module.guardduty_s3.detector_id
 }
 
-output "detector_arn" {
-  description = "ARN of the GuardDuty detector."
-  value       = aws_guardduty_detector.this.arn
+output "guardduty_detector_arn" {
+  value = module.guardduty_s3.detector_arn
 }
 
 output "s3_protection_status" {
-  description = "S3 protection status (ENABLED/DISABLED)."
-  value       = aws_guardduty_detector_feature.s3_logs.status
-}
-
-
-# Enable GuardDuty S3 data source
-
-resource "aws_guardduty_detector_feature" "s3_logs" {
-  detector_id = aws_guardduty_detector.this.id
-  name        = "S3_DATA_EVENTS"
-  status      = var.enable_s3_logs ? "ENABLED" : "DISABLED"
-}
-
-# Optional: If running org-wide GuardDuty
-resource "aws_guardduty_organization_configuration_feature" "s3_logs" {
-  count       = var.org_enable ? 1 : 0
-  detector_id = aws_guardduty_detector.this.id
-  name        = "S3_DATA_EVENTS"
-  auto_enable = var.enable_s3_logs
+  value = module.guardduty_s3.s3_protection_status
 }
