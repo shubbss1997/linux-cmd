@@ -1,11 +1,92 @@
-output "guardduty_detector_id" {
-  value = module.guardduty_s3.detector_id
+main.tf
+
+module "guardduty_s3_malware" {
+  source = "../../../../../../modules/aws_guardduty_s3_malware"
+
+  finding_publishing_frequency  = var.finding_publishing_frequency
+  enable_s3_logs                = var.enable_s3_logs
+  enable_s3_malware_protection  = var.enable_s3_malware_protection
+  org_enable                    = var.org_enable
+  org_admin_account_id          = var.org_admin_account_id
+  org_auto_enable_members       = var.org_auto_enable_members
+  tags                          = var.tags
 }
 
-output "guardduty_detector_arn" {
-  value = module.guardduty_s3.detector_arn
+variable "finding_publishing_frequency" {
+  description = "How often GuardDuty findings are published."
+  type        = string
 }
 
-output "s3_protection_status" {
-  value = module.guardduty_s3.s3_protection_status
+variable "enable_s3_logs" {
+  description = "Enable S3 data event protection."
+  type        = bool
+}
+
+variable "enable_s3_malware_protection" {
+  description = "Enable S3 malware protection."
+  type        = bool
+}
+
+variable "org_enable" {
+  description = "Enable org-wide GuardDuty setup."
+  type        = bool
+}
+
+variable "org_admin_account_id" {
+  description = "Delegated admin account ID for GuardDuty."
+  type        = string
+}
+
+variable "org_auto_enable_members" {
+  description = "Automatically enable GuardDuty for new org accounts."
+  type        = bool
+}
+
+variable "tags" {
+  description = "Common resource tags."
+  type        = map(string)
+}
+
+var.tf
+
+# =============================
+#  GuardDuty S3 Malware Config
+# =============================
+
+# Frequency of findings publishing
+finding_publishing_frequency = "FIFTEEN_MINUTES"
+
+# Enable standard S3 data event detection
+enable_s3_logs = true
+
+# Enable malware scanning for S3 objects
+enable_s3_malware_protection = true
+
+# Organization-level configuration
+org_enable              = true
+org_admin_account_id    = "123456789012"   # Replace with your Delegated Admin account ID
+org_auto_enable_members = true
+
+# Resource tagging
+tags = {
+  Project     = "GeniusRestaurant"
+  Environment = "dev"
+  Owner       = "SecurityTeam"
+}
+
+outputs.tf 
+
+output "detector_id" {
+  description = "GuardDuty detector ID"
+  value       = module.guardduty_s3_malware.detector_id
+}
+
+output "malware_status" {
+  description = "S3 Malware Protection status"
+  value       = module.guardduty_s3_malware.s3_malware_protection_status
+}
+
+output "org_auto_enable" {
+  description = "Whether org auto-enable is ON"
+  value       = module.guardduty_s3_malware.organization_auto_enable
 }
