@@ -1,35 +1,11 @@
-variable "finding_publishing_frequency" {
-  description = "How often findings are published. Valid: FIFTEEN_MINUTES, ONE_HOUR, SIX_HOURS."
+variable "project" {
+  description = "Project name for tagging"
   type        = string
-  default     = "FIFTEEN_MINUTES"
+  default     = "Xenial"
 }
 
-variable "enable_s3_logs" {
-  description = "Enable S3 protection in GuardDuty."
-  type        = bool
-  default     = true
-}
-
-variable "org_enable" {
-  description = "Enable organization-wide GuardDuty setup."
-  type        = bool
-  default     = false
-}
-
-variable "org_admin_account_id" {
-  description = "Delegated admin account ID for GuardDuty org setup."
+variable "environment" {
+  description = "Environment name"
   type        = string
-  default     = ""
-}
-
-variable "org_auto_enable_members" {
-  description = "Automatically enable GuardDuty for new accounts in the organization."
-  type        = bool
-  default     = true
-}
-
-variable "tags" {
-  description = "Tags to apply to GuardDuty resources."
-  type        = map(string)
-  default     = {}
+  default     = "dev"
 }
