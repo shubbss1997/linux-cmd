@@ -1,0 +1,5 @@
+Last week, I worked on a few tasks. The first was creating a VPC using Terraform in the POS Shared AQA account. I faced some issues initially, but they are now resolved.
+I also created a release branch, worked on an integrator token-related ticket, and fixed an issue where a transition was missing by adding a new one.
+
+Today, I enabled malware scanning in GuardDuty for all S3 buckets under the Genius Restaurant accounts.
+Honestly, I’m not sure whether this task should be performed through the master account or individually for each account, so I’m gathering that information first before proceeding further.
