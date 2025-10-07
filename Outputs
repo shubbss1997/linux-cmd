@@ -7,3 +7,8 @@ output "detector_arn" {
   description = "ARN of the GuardDuty detector."
   value       = aws_guardduty_detector.this.arn
 }
+
+output "s3_protection_status" {
+  description = "S3 protection status (ENABLED/DISABLED)."
+  value       = aws_guardduty_detector_feature.s3_logs.status
+}
