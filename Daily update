@@ -1,5 +1,86 @@
-Last week, I worked on a few tasks. The first was creating a VPC using Terraform in the POS Shared AQA account. I faced some issues initially, but they are now resolved.
-I also created a release branch, worked on an integrator token-related ticket, and fixed an issue where a transition was missing by adding a new one.
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.40"
+    }
+  }
+}
 
-Today, I enabled malware scanning in GuardDuty for all S3 buckets under the Genius Restaurant accounts.
-Honestly, I’m not sure whether this task should be performed through the master account or individually for each account, so I’m gathering that information first before proceeding further.
+locals {
+  tags = merge(
+    {
+      Module = "aws_guardduty"
+    },
+    var.tags
+  )
+}
+
+# Create GuardDuty detector (main component)
+resource "aws_guardduty_detector" "this" {
+  enable                       = true
+  finding_publishing_frequency  = var.finding_publishing_frequency
+
+  datasources {
+    s3_logs {
+      enable = var.enable_s3_logs
+    }
+
+    kubernetes {
+      audit_logs {
+        enable = var.enable_eks_audit_logs
+      }
+    }
+
+    malware_protection {
+      scan_ec2_instance_with_findings {
+        ebs_volumes = var.enable_ebs_malware_protection
+      }
+    }
+  }
+
+  tags = local.tags
+}
+
+# Optional: Organization-level setup (run in delegated admin account)
+resource "aws_guardduty_organization_admin_account" "this" {
+  count            = var.org_enable ? 1 : 0
+  admin_account_id = var.org_admin_account_id
+}
+
+resource "aws_guardduty_organization_configuration" "this" {
+  count       = var.org_enable ? 1 : 0
+  detector_id = aws_guardduty_detector.this.id
+  auto_enable = var.org_auto_enable_members
+
+  datasources {
+    s3_logs {
+      auto_enable = var.enable_s3_logs
+    }
+    kubernetes {
+      audit_logs {
+        auto_enable = var.enable_eks_audit_logs
+      }
+    }
+    malware_protection {
+      scan_ec2_instance_with_findings {
+        ebs_volumes = var.enable_ebs_malware_protection
+      }
+    }
+  }
+
+  depends_on = [aws_guardduty_organization_admin_account.this]
+}
+
+# Optional: Invite specific member accounts
+resource "aws_guardduty_member" "members" {
+  for_each    = var.members
+  account_id  = each.value.account_id
+  detector_id = aws_guardduty_detector.this.id
+  email       = each.value.email
+  invite      = var.members_invite
+
+  disable_email_notification = var.members_disable_email
+  message                    = var.members_invite_message
+}
