@@ -1,0 +1,76 @@
+variable "finding_publishing_frequency" {
+  description = "How often findings are published to GuardDuty. Valid: FIFTEEN_MINUTES, ONE_HOUR, SIX_HOURS."
+  type        = string
+  default     = "FIFTEEN_MINUTES"
+}
+
+variable "enable_s3_logs" {
+  description = "Enable S3 data source monitoring."
+  type        = bool
+  default     = true
+}
+
+variable "enable_eks_audit_logs" {
+  description = "Enable EKS audit log monitoring."
+  type        = bool
+  default     = true
+}
+
+variable "enable_ebs_malware_protection" {
+  description = "Enable EC2 EBS volume malware scanning."
+  type        = bool
+  default     = true
+}
+
+# Organization-wide setup
+variable "org_enable" {
+  description = "Enable organization-wide GuardDuty setup."
+  type        = bool
+  default     = false
+}
+
+variable "org_admin_account_id" {
+  description = "Delegated admin account ID for GuardDuty organization setup."
+  type        = string
+  default     = ""
+}
+
+variable "org_auto_enable_members" {
+  description = "Automatically enable GuardDuty for new accounts in the organization."
+  type        = bool
+  default     = true
+}
+
+# Member accounts
+variable "members" {
+  description = "Map of member accounts to link to this detector."
+  type = map(object({
+    account_id = string
+    email      = string
+  }))
+  default = {}
+}
+
+variable "members_invite" {
+  description = "Send GuardDuty invitations to the member accounts."
+  type        = bool
+  default     = true
+}
+
+variable "members_disable_email" {
+  description = "Disable email notifications for invitations."
+  type        = bool
+  default     = true
+}
+
+variable "members_invite_message" {
+  description = "Custom message included with GuardDuty invitations."
+  type        = string
+  default     = "GuardDuty enabled by Security/DevOps team."
+}
+
+variable "tags" {
+  description = "Tags to apply to GuardDuty resources."
+  type        = map(string)
+  default     = {}
+}
