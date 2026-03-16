@@ -87,3 +87,80 @@
 56   )
 
 57 }
+
+
+
+
+resource "aws_cloudfront_distribution" "cloudfront_distribution" {
+
+  enabled             = true
+  default_root_object = "index.html"
+
+  aliases = var.alternate_domain_names
+
+  origin {
+    domain_name = var.origin_domain_name
+    origin_id   = "alb-origin"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+
+      origin_ssl_protocols = ["TLSv1.2"]
+    }
+  }
+
+  default_cache_behavior {
+
+    target_origin_id = "alb-origin"
+
+    allowed_methods = [
+      "GET",
+      "HEAD",
+      "OPTIONS"
+    ]
+
+    cached_methods = [
+      "GET",
+      "HEAD"
+    ]
+
+    compress = true
+
+    viewer_protocol_policy = var.viewer_protocol_policy
+
+    forwarded_values {
+      query_string = true
+
+      cookies {
+        forward = "none"
+      }
+    }
+  }
+
+  logging_config {
+    bucket          = var.logging_bucket
+    include_cookies = false
+    prefix          = "cloudfront/"
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  web_acl_id = var.web_acl_id
+
+  tags = merge(
+    var.tags,
+    {
+      Name = var.name
+    }
+  )
+}
